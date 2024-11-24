@@ -371,7 +371,7 @@ function mapPersonal(personal) {
 
 function formatAddress(address) {
   const { unitNumber, streetNumber, street, suburb, state, postcode, country } =
-    address;
+    address.address ? address.address : address;
 
   const unit = unitNumber ? `Unit ${unitNumber}, ` : "";
   const streetAddress =
