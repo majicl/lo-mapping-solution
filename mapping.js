@@ -75,9 +75,9 @@ function mapBusiness(skynet) {
       employerName: business.aclBusinessName,
     },
     gstRegistered: toTitledString(business.isGSTRegistered),
-    dateEstablishment: business.dateEstablished,
+    dateEstablishment: toDate(business.dateEstablished),
     industry: mapIndustry(clean(business.industry)),
-    dateRegisteredForGst: business.dateGSTRegistered,
+    dateRegisteredForGst: toDate(business.dateGSTRegistered),
     isCompanyProprietary: toTitledString(business.isCompanyProprietary),
     noOfGuarantors: business.noOfDirectors || "",
     noOfDirectors: business.noOfDirectors || "",
@@ -126,9 +126,9 @@ function mapBusiness(skynet) {
         trusteeType: mapEntityType(skynet.business?.trustType),
         tradingName: skynet.trustee?.tradingName,
         industry: skynet.trustee?.industry,
-        dateEstablished: skynet.trustee?.dateGSTRegistered,
+        dateEstablished: toDate(skynet.trustee?.dateGSTRegistered),
         gstRegistered: toTitledString(skynet.trustee?.isGSTRegistered),
-        dateRegisteredForGst: skynet.trustee?.dateGSTRegistered,
+        dateRegisteredForGst: toDate(skynet.trustee?.dateGSTRegistered),
         isCompanyProprietary: toTitledString(
           skynet.trustee?.isCompanyProprietary
         ),
@@ -313,8 +313,8 @@ function mapCreditInfo(creditInfo) {
     unpaidDefaultAmount: toNum(creditInfo.unpaidDefaultAmount),
     defaultAmountIssuedParty: creditInfo.defaultAmountIssuedParty,
     unpaidDefaultAmountIssuedParty: creditInfo.unpaidDefaultAmountIssuedParty,
-    defaultAmountPaidDate: creditInfo.defaultAmountPaidDate,
-    unpaidDefaultAmountIssuedDate: creditInfo.unpaidDefaultAmountIssuedDate,
+    defaultAmountPaidDate: toDate(creditInfo.defaultAmountPaidDate),
+    unpaidDefaultAmountIssuedDate: toDate(creditInfo.unpaidDefaultAmountIssuedDate),
     comprehensiveScore: toNum(creditInfo.comprehensiveScore),
     onePointOneScore: toNum(creditInfo.onePointOneScore),
     oneScore: toNum(creditInfo.oneScore),
@@ -338,10 +338,10 @@ function mapPersonal(personal) {
     gender: mapGender(personal.gender),
     email: personal.email || "",
     phone: personal.mobilePhone || "",
-    dateOfBirth: personal.dob || "",
+    dateOfBirth: toDate(personal.dob),
     maritalStatus: mapMaritalStatus(personal.maritalStatus),
     anyDependants: toYesNo(noOfDependants > 0),
-    howManyDependants: noOfDependants,
+    howManyDependants: noOfDependants.toString(),
     dependents: new Array(noOfDependants).fill({}).map((_, i) => ({
       name: "",
       age: toNum(personal.ageOfDependants.split(",")[i]),
@@ -350,21 +350,21 @@ function mapPersonal(personal) {
     visaType: mapVisaType(clean(personal.visaType)),
     identificationType: mapIdentityType(personal.idType),
     drivingLicenceNumber: personal.driverLicenceNumber || "",
-    driverlicenceed: personal.driverLicenceExpiry || "",
+    driverlicenceed: toDate(personal.driverLicenceExpiry),
     driverLicenceClass: mapDriverLicenceClass(personal.driverLicenceType),
     driverLicenceIssuingState: personal.driverLicenceState,
     cardNumber: personal.driverLicenceCardNumber || "",
-    visaExpiryDate: personal.visaExpiryDate || "",
+    visaExpiryDate: toDate(personal.visaExpiryDate),
     medicareNumber: personal.medicareCardNumber || "",
     medicarePosition: personal.medicareCardReferenceNumber
       ? parseInt(personal.medicareCardReferenceNumber)
       : 0,
-    medicareExpiryDate: personal.medicareCardExpiry || "",
+    medicareExpiryDate: toDate(personal.medicareCardExpiry),
     photoIdCardNumber: personal.photoIdNumber || "",
-    photoIdExpiryDate: personal.photoIdExpiry || "",
+    photoIdExpiryDate: toDate(personal.photoIdExpiry),
     photoIdIssuingState: personal.photoIdState || "",
     identificationNumber: personal.passportNumber || "",
-    identificationExpiryDate: personal.passportExpiry || "",
+    identificationExpiryDate: toDate(personal.passportExpiry),
     identificationIssuedBy: mapCountry(personal.passportCountry),
   };
 }
@@ -505,8 +505,8 @@ function mapIncome(income) {
       income.netIncomeVerification
     ),
     ytdNetFromPayslip: toNum(income.payslipNetIncome),
-    employmentStartDate: income.currentEmploymentStartDate,
-    payPeriodEndDate: income.payslipEndDate,
+    employmentStartDate: toDate(income.currentEmploymentStartDate),
+    payPeriodEndDate: toDate(income.payslipEndDate),
     payslipNetIncome: toNum(income.payslipNetIncome),
     primaryNetIncome: toNum(income.primaryNetIncome),
     investmentPropertyIncome: toNum(income.investmentPropertyIncome),
@@ -610,7 +610,7 @@ function mapExpense(expenses) {
     },
     foreseeableChanges: toTitledString(expenses.foreseeableChanges),
     foreseeableChangesExplanation: expenses.foreseeableChangesExplanation,
-    totalExpenses: parseFloat(expenses.declaredMonthlyHouseholdExpenses || "0"),
+    totalExpenses: expenses.declaredMonthlyHouseholdExpenses || "0",
   };
 }
 
@@ -623,6 +623,10 @@ function toNum(v) {
 }
 function clean(s) {
   return (s || "").replaceAll("_", " ");
+}
+
+function toDate(s) {
+  return s ;//? new Date(s) : undefined;
 }
 
 function toTitledString(capitalizedStr) {
